@@ -1,6 +1,6 @@
 {
   "inventorysorter.discord": "Discord",
-  "inventorysorter.key.category": "Dibaber renabl",
+  "inventorysorter.key.category": "Rummer renabl",
   "inventorysorter.key.sort": "Rummañ",
   "inventorysorter.key.config": "Digeriñ an arventennoù",
   "inventorysorter.key.modifier": "Stokell kemmer (evit kuzhat/eskemmañ)",
@@ -49,6 +49,7 @@
   "inventorysorter.config.showTooltip": "Klogorenn-skoazell ar bouton \"rummañ\"",
   "inventorysorter.config.showTooltip.tooltip": "Klogorenn-skoazell an doare da rummañ a vez diskouezet pa dremen al logodenn a-us d'ar bouton \"rummañ\"",
   "inventorysorter.config.sortHovered": "Rummañ ar renabl dindan al logodenn hepken",
+  "inventorysorter.config.sortHovered.tooltip": "Na rummañ ar renabl dindan al logodenn nemet ma implijit ar verradenn-glavier pe an daouglikañ",
   "inventorysorter.cmd.sortHovered.set": "%s eo rummañ ar renabl dindan al logodenn hepken bremañ",
   "inventorysorter.cmd.sortHovered.get": "%s eo rummañ ar renabl dindan al logodenn hepken",
   "inventorysorter.cmd.player-required": "An urzhiad-mañ a c'hall bezañ sevenet gant c'hoarier hepken",
