@@ -178,7 +178,11 @@ public class ConfigScreen {
             compatCategory.addEntry(entry);
         }
 
-        SupportCategory.add(screenBuilder, entryBuilder);
+        try {
+            SupportCategory.add(screenBuilder, entryBuilder);
+        } catch (Exception e) {
+            LOGGER.debug("Failed to add Supporter category", e);
+        }
 
         return screenBuilder.build();
     }
