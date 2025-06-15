@@ -10,6 +10,7 @@ import net.kyrptonaught.inventorysorter.compat.sources.ConfigLoader;
 import net.kyrptonaught.inventorysorter.config.NewConfigOptions;
 import net.kyrptonaught.inventorysorter.network.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.input.Input;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
@@ -32,24 +33,18 @@ public class InventorySorterModClient implements ClientModInitializer {
 
     public static final KeyBinding configButton = new KeyBinding(
             "inventorysorter.key.config",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_P,
+            InputUtil.GLFW_KEY_P,
             "inventorysorter.key.category"
     );
 
     public static final KeyBinding sortButton = new KeyBinding(
             "inventorysorter.key.sort",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_P,
+            InputUtil.GLFW_KEY_P,
             "inventorysorter.key.category"
     );
 
-    public static final KeyBinding modifierButton = new KeyBinding(
-            "inventorysorter.key.modifier",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_LEFT_CONTROL,
-            "inventorysorter.key.category"
-    );
+    public static final InputUtil.Key modifierButton = InputUtil.Type.KEYSYM.createFromCode(InputUtil.GLFW_KEY_LEFT_CONTROL);
+
 
     @Override
     public void onInitializeClient() {
@@ -57,7 +52,6 @@ public class InventorySorterModClient implements ClientModInitializer {
 
         KeyBindingHelper.registerKeyBinding(configButton);
         KeyBindingHelper.registerKeyBinding(sortButton);
-        KeyBindingHelper.registerKeyBinding(modifierButton);
 
         /*
           This is to attach server defined configs to the compatibility layer on the client only
@@ -104,7 +98,7 @@ public class InventorySorterModClient implements ClientModInitializer {
                 keyToCheck = () -> sortButton.wasPressed() || configButton.wasPressed();
             }
 
-            if (keyToCheck.get()) {
+            while (keyToCheck.get()) {
                 client.setScreen(ConfigScreen.getConfigScreen(client.currentScreen));
             }
         });

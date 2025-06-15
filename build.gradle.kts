@@ -12,6 +12,7 @@ modSettings {
         darkBackground = true
         musicVolume = 0.0
         narrator = false
+        fov = 90
     }
 
     variableReplacements = mapOf(
@@ -29,6 +30,7 @@ repositories {
     maven("https://maven.shedaniel.me")
     maven("https://maven.meza.gg/releases")
     maven("https://maven.nucleoid.xyz")
+    maven("https://api.modrinth.com/maven")
 }
 
 dependencies {

@@ -57,7 +57,7 @@ public class SortButtonWidget extends TexturedButtonWidget {
     public SortButtonWidget(int int_1, int int_2, boolean playerInv) {
         super(int_1, int_2, 10, 9, TEXTURES, null, Text.literal(""));
         this.playerInv = playerInv;
-        this.modifierKey = KeyBindingHelper.getBoundKeyOf(modifierButton);
+        this.modifierKey = modifierButton;
     }
 
     @Override
