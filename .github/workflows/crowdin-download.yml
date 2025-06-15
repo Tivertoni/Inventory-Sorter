@@ -44,7 +44,7 @@ jobs:
           pull_request_title: 'fix(l10n): additional translations'
           pull_request_base_branch_name: 'dev'
 
-          pull_request_labels: 'l10n, translation
+          pull_request_labels: 'l10n, translation'
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
