@@ -86,7 +86,7 @@ public class ConfigScreen {
 
     public static Screen getConfigScreen(Screen parent) {
         NewConfigOptions options = getConfig();
-        InputUtil.Key modifierKey = KeyBindingHelper.getBoundKeyOf(modifierButton);
+        InputUtil.Key modifierKey = modifierButton;
 
         ConfigBuilder screenBuilder = ConfigBuilder.create()
                 .setParentScreen(parent)

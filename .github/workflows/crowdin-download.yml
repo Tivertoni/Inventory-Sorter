@@ -23,29 +23,6 @@ concurrency:
 jobs:
   crowdin:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      max-parallel: 1
-      matrix:
-        lc: [
-          { lc: ar, name: Arabic },
-          { lc: br-FR, name: "Breton" },
-          { lc: zh-CN, name: Chinese },
-          { lc: zh-HK, name: "Chinese (Hong Kong)" },
-          { lc: da, name: Danish },
-          { lc: fi, name: Finnish },
-          { lc: fr, name: French },
-          { lc: de, name: German },
-          { lc: el, name: Greek },
-          { lc: it, name: Italian },
-          { lc: ja, name: Japanese },
-          { lc: no, name: Norwegian },
-          { lc: pt-BR, name: "Brazilian Portuguese" },
-          { lc: ru, name: Russian },
-          { lc: es-ES, name: "Spanish (es)" },
-          { lc: sv-SE, name: Swedish },
-          { lc: uk, name: Ukrainian }
-        ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,17 +36,15 @@ jobs:
           upload_sources: false
           upload_translations: false
           download_translations: true
-          localization_branch_name: l10n/${{matrix.lc.lc}}
+          localization_branch_name: l10n
 
           create_pull_request: true
           skip_untranslated_strings: true
-          commit_message: 'fix(l10n): additional ${{matrix.lc.name}} translations'
-          pull_request_title: 'fix(l10n): additional ${{matrix.lc.name}} translations'
+          commit_message: 'fix(l10n): additional translations'
+          pull_request_title: 'fix(l10n): additional translations'
           pull_request_base_branch_name: 'dev'
-          download_language: ${{matrix.lc.lc}}
 
-
-          pull_request_labels: 'l10n, translation, ${{matrix.lc.name}}'
+          pull_request_labels: 'l10n, translation'
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
