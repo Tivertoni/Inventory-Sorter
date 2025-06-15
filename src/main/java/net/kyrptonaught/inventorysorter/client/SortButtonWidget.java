@@ -2,10 +2,10 @@ package net.kyrptonaught.inventorysorter.client;
 
 /*? if <1.21.5 {*/
 /*import com.mojang.blaze3d.systems.RenderSystem;
-*//*?}*/
+ *//*?}*/
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.kyrptonaught.inventorysorter.InventoryHelper;
 import net.kyrptonaught.inventorysorter.InventorySorterMod;
 import net.kyrptonaught.inventorysorter.SortType;
@@ -15,7 +15,7 @@ import net.kyrptonaught.inventorysorter.network.InventorySortPacket;
 import net.minecraft.client.MinecraftClient;
 /*? if <1.21.5 {*/
 /*import net.minecraft.client.gl.ShaderProgramKeys;
-*//*?}*/
+ *//*?}*/
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
@@ -153,7 +153,7 @@ public class SortButtonWidget extends TexturedButtonWidget {
                 lines.add(Text.translatable("inventorysorter.sortButton.tooltip.hide").asOrderedText());
             }
 
-            if  ((config.scrollBehaviour == ScrollBehaviour.MODIFIER) && isModifierPressed()) {
+            if ((config.scrollBehaviour == ScrollBehaviour.MODIFIER) && isModifierPressed()) {
                 lines.add(Text.translatable("inventorysorter.sortButton.tooltip.sortType", Text.translatable(getConfig().sortType.getTranslationKey()).formatted(Formatting.BOLD)).asOrderedText());
                 lines.add(Text.translatable("inventorysorter.sortButton.tooltip.help.sortType").formatted(Formatting.GRAY).asOrderedText());
                 lines.add(Text.translatable("inventorysorter.sortButton.tooltip.hide").formatted(Formatting.GRAY).asOrderedText());
