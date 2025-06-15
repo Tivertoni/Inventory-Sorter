@@ -126,7 +126,7 @@ public class InventorySorterModClient implements ClientModInitializer {
                 keyToCheck = () -> sortButton.wasPressed() || configButton.wasPressed();
             }
 
-            while (keyToCheck.get()) {
+            if (keyToCheck.get()) {
                 client.setScreen(ConfigScreen.getConfigScreen(client.currentScreen));
             }
         });
