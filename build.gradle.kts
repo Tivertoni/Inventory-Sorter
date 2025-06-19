@@ -6,6 +6,8 @@ plugins {
 
 stonecutter.replacement(true, "MOD_VERSION_REPL", mod.version)
 
+stonecutter.consts(Pair("hasModMenu", mod.prop("modmenu_version", "0") != "0"))
+
 modSettings {
 
     clientOptions {
@@ -18,9 +20,10 @@ modSettings {
     variableReplacements = mapOf(
         "schema" to "\$schema",
         "clothVersion" to mod.prop("cloth_version"),
-        "modmenuVersion" to mod.prop("modmenu_version"),
+        "modmenuVersion" to mod.prop("modmenu_version", "*"),
         "fabricPermissionsApiVersion" to mod.prop("fabric_permissions_api_version"),
-        "fabricVersion" to mod.prop("fabric_version")
+        "fabricVersion" to mod.prop("fabric_version"),
+        "minecraftVersionVirtual" to mod.prop("minecraft_version_virtual", stonecutter.current.version),
     )
 }
 
@@ -29,6 +32,7 @@ repositories {
 	maven("https://maven.terraformersmc.com/releases")
     maven("https://maven.shedaniel.me")
     maven("https://maven.meza.gg/releases")
+    maven("https://maven.meza.gg/snapshots")
     maven("https://maven.nucleoid.xyz")
     maven("https://api.modrinth.com/maven")
 }
@@ -41,13 +45,17 @@ dependencies {
     modImplementation("me.lucko:fabric-permissions-api:${mod.prop("fabric_permissions_api_version")}")
     include("me.lucko:fabric-permissions-api:${mod.prop("fabric_permissions_api_version")}")
 
-    modImplementation("gg.meza:meza_core-${mod.loader}:${mod.prop("meza_core_version")}")
-    include("gg.meza:meza_core-${mod.loader}:${mod.prop("meza_core_version")}")
+    modImplementation("gg.meza:meza_core-${mod.loader}:${mod.prop("meza_core_version")}+${stonecutter.current.version}")
+    include("gg.meza:meza_core-${mod.loader}:${mod.prop("meza_core_version")}+${stonecutter.current.version}")
 
     modImplementation("xyz.nucleoid:server-translations-api:${mod.prop("server_translations_api_version")}")
     include("xyz.nucleoid:server-translations-api:${mod.prop("server_translations_api_version")}")
 
-    modApi("com.terraformersmc:modmenu:${mod.prop("modmenu_version")}")
+    try {
+        modApi("com.terraformersmc:modmenu:${mod.prop("modmenu_version")}")
+    } catch (e: Exception) {
+        logger.warn("Modmenu not found, skipping dependency.")
+    }
     modApi("me.shedaniel.cloth:cloth-config-${mod.loader}:${mod.prop("cloth_version")}") {
         exclude(group = "net.fabricmc.fabric-api")
     }

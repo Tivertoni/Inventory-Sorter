@@ -2,8 +2,11 @@ package net.kyrptonaught.inventorysorter.client;
 
 /*? if <1.21.5 {*/
 /*import com.mojang.blaze3d.systems.RenderSystem;
- *//*?}*/
+*//*?}*/
 
+/*? if >=1.21.6 {*/
+import net.minecraft.client.gl.RenderPipelines;
+/*?}*/
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kyrptonaught.inventorysorter.InventoryHelper;
@@ -22,7 +25,9 @@ import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.client.render.RenderLayer;
+/*? if <1.21.6 {*/
+/*import net.minecraft.client.render.RenderLayer;
+*//*?}*/
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.registry.Registries;
@@ -87,12 +92,21 @@ public class SortButtonWidget extends TexturedButtonWidget {
         /*RenderSystem.setShader(ShaderProgramKeys.POSITION);
         RenderSystem.enableDepthTest();
         *//*?}*/
-        context.getMatrices().push();
+        /*? if >=1.21.6 {*/
+        context.getMatrices().pushMatrix();
+        context.getMatrices().scale(.5f, .5f);
+        context.getMatrices().translate(getX(), getY());
+        Identifier identifier = TEXTURES.get(true, isHovered());
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, identifier, getX(), getY(), 0, 0, 20, 18, 20, 18);
+        context.getMatrices().popMatrix();
+        /*?} else {*/
+        /*context.getMatrices().push();
         context.getMatrices().scale(.5f, .5f, 1);
         context.getMatrices().translate(getX(), getY(), 0);
         Identifier identifier = TEXTURES.get(true, isHovered());
         context.drawTexture(RenderLayer::getGuiTextured, identifier, getX(), getY(), 0, 0, 20, 18, 20, 18);
         context.getMatrices().pop();
+        *//*?}*/
         this.renderTooltip(context, mouseX, mouseY);
     }
 
@@ -170,12 +184,21 @@ public class SortButtonWidget extends TexturedButtonWidget {
 
             }
 
+            /*? if >=1.21.6 {*/
             context.drawTooltip(
+                    textRenderer,
+                    lines,
+                    widgetTooltipPositioner,
+                    mouseX, mouseY, true
+            );
+            /*?} else {*/
+            /*context.drawTooltip(
                     textRenderer,
                     lines,
                     widgetTooltipPositioner,
                     mouseX, mouseY
             );
+            *//*?}*/
         }
     }
 }
