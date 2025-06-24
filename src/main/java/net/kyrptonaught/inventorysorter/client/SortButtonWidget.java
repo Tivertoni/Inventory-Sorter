@@ -61,7 +61,9 @@ public class SortButtonWidget extends TexturedButtonWidget {
     private final TooltipPositioner widgetTooltipPositioner = HoveredTooltipPositioner.INSTANCE;
     private final InputUtil.Key modifierKey;
     private Screen parentScreen;
-    private static int RECIPE_BOOK_OFFSET = 77;
+    // Offset used to align the sort button with the recipe book in the UI.
+    // The value 77 was determined based on the default layout of the Minecraft inventory screen.
+    private static final int RECIPE_BOOK_OFFSET = 77;
     private int initialX;
 
     private static final ScheduledExecutorService debounceExecutor = Executors.newSingleThreadScheduledExecutor();
