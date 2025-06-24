@@ -1,4 +1,5 @@
 package net.kyrptonaught.inventorysorter.client;
+import net.kyrptonaught.inventorysorter.mixin.RecipeBookScreenAccessor;
 
 /*? if <1.21.5 {*/
 /*import com.mojang.blaze3d.systems.RenderSystem;
@@ -22,6 +23,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.RecipeBookScreen;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
@@ -31,6 +35,7 @@ import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.registry.Registries;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -43,8 +48,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static net.kyrptonaught.inventorysorter.InventorySorterMod.compatibility;
-import static net.kyrptonaught.inventorysorter.InventorySorterMod.getConfig;
+import static net.kyrptonaught.inventorysorter.InventorySorterMod.*;
+import static net.kyrptonaught.inventorysorter.client.InventorySorterModClient.PLAYER_INVENTORY;
 import static net.kyrptonaught.inventorysorter.client.InventorySorterModClient.modifierButton;
 
 @Environment(EnvType.CLIENT)
@@ -55,22 +60,40 @@ public class SortButtonWidget extends TexturedButtonWidget {
     private final boolean playerInv;
     private final TooltipPositioner widgetTooltipPositioner = HoveredTooltipPositioner.INSTANCE;
     private final InputUtil.Key modifierKey;
+    private Screen parentScreen;
+    // Offset used to align the sort button with the recipe book in the UI.
+    // The value 77 was determined based on the default layout of the Minecraft inventory screen.
+    private static final int RECIPE_BOOK_OFFSET = 77;
+    private int initialX;
 
     private static final ScheduledExecutorService debounceExecutor = Executors.newSingleThreadScheduledExecutor();
     private static ScheduledFuture<?> debounceTask;
 
-    public SortButtonWidget(int int_1, int int_2, boolean playerInv) {
-        super(int_1, int_2, 10, 9, TEXTURES, null, Text.literal(""));
+    public SortButtonWidget(int x, int y, boolean playerInv, Screen parent) {
+        super(x, y, 10, 9, TEXTURES, null, Text.literal(""));
         this.playerInv = playerInv;
         this.modifierKey = modifierButton;
+        this.parentScreen = parent;
+        this.initialX = x;
     }
 
     @Override
     public void onPress() {
         MinecraftClient instance = MinecraftClient.getInstance();
+        String screenID = null;
+        if (InventoryHelper.canSortInventory(instance.player)) {
+            screenID = Registries.SCREEN_HANDLER.getId(instance.player.currentScreenHandler.getType()).toString();
+        }
+        if (instance.player.currentScreenHandler instanceof PlayerScreenHandler) {
+            screenID = PLAYER_INVENTORY.toString();
+        }
+
+        if (screenID == null) {
+            InventorySortPacket.sendSortPacket(playerInv);
+            return;
+        }
+
         if (isModifierPressed()) {
-            if (InventoryHelper.canSortInventory(instance.player)) {
-                String screenID = Registries.SCREEN_HANDLER.getId(instance.player.currentScreenHandler.getType()).toString();
                 getConfig().disableButtonForScreen(screenID);
                 compatibility.addShouldHideSortButton(screenID);
                 getConfig().save();
@@ -79,7 +102,8 @@ public class SortButtonWidget extends TexturedButtonWidget {
                 SystemToast.add(instance.getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION,
                         Text.translatable("inventorysorter.sortButton.toast.hide.success.title"),
                         Text.translatable("inventorysorter.sortButton.toast.hide.success.description", screenID));
-            }
+                this.visible = false;
+
         } else {
             InventorySortPacket.sendSortPacket(playerInv);
         }
@@ -87,12 +111,23 @@ public class SortButtonWidget extends TexturedButtonWidget {
 
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+        int offset = 0;
         if (!this.visible) return;
+
+        if (this.parentScreen != null && this.parentScreen instanceof RecipeBookScreen<?>) {
+            RecipeBookScreen<?> s = (RecipeBookScreen<?>) this.parentScreen;
+            RecipeBookWidget<?> widget = ((RecipeBookScreenAccessor) s).getRecipeBook();
+            offset = widget.isOpen() ? RECIPE_BOOK_OFFSET : 0;
+        }
+
+        setX(this.initialX + offset);
+
         /*? if <1.21.5 {*/
         /*RenderSystem.setShader(ShaderProgramKeys.POSITION);
         RenderSystem.enableDepthTest();
         *//*?}*/
         /*? if >=1.21.6 {*/
+
         context.getMatrices().pushMatrix();
         context.getMatrices().scale(.5f, .5f);
         context.getMatrices().translate(getX(), getY());

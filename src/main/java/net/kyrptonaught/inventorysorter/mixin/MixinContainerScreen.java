@@ -27,8 +27,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.kyrptonaught.inventorysorter.InventorySorterMod.compatibility;
-import static net.kyrptonaught.inventorysorter.InventorySorterMod.getConfig;
+import static net.kyrptonaught.inventorysorter.InventorySorterMod.*;
+import static net.kyrptonaught.inventorysorter.client.InventorySorterModClient.PLAYER_INVENTORY;
 
 @Environment(EnvType.CLIENT)
 @Mixin(HandledScreen.class)
@@ -67,9 +67,20 @@ public abstract class MixinContainerScreen extends Screen implements SortableCon
 
         if (getConfig().showSortButton && InventoryHelper.shouldDisplayButtons(client.player)) {
             boolean playerOnly = !InventoryHelper.canSortInventory(client.player);
-            this.addDrawableChild(invsort$SortBtn = new SortButtonWidget(this.x + this.backgroundWidth - 20, this.y + (playerOnly ? (backgroundHeight - 95) : 6), playerOnly));
-            if (!playerOnly && getConfig().separateButton)
-                this.addDrawableChild(invsort$PlayerSortBtn = new SortButtonWidget(invsort$SortBtn.getX(), this.y + ((SortableContainerScreen) (this)).getMiddleHeight(), true));
+            if (playerOnly) {
+                invsort$PlayerSortBtn = new SortButtonWidget(this.x + this.backgroundWidth - 20, this.y + (playerOnly ? (backgroundHeight - 95) : 6), playerOnly, client.currentScreen);
+                invsort$PlayerSortBtn.visible = compatibility.shouldShowSortButton(PLAYER_INVENTORY);
+                this.addDrawableChild(invsort$PlayerSortBtn);
+            } else {
+                invsort$SortBtn = new SortButtonWidget(this.x + this.backgroundWidth - 20, this.y + (playerOnly ? (backgroundHeight - 95) : 6), playerOnly, client.currentScreen);
+                this.addDrawableChild(invsort$SortBtn);
+
+                if (getConfig().separateButton) { // If separate button is enabled, add a player inventory sort button
+                    invsort$PlayerSortBtn = new SortButtonWidget(invsort$SortBtn.getX(), this.y + ((this)).getMiddleHeight(), true, client.currentScreen);
+                    invsort$PlayerSortBtn.visible = compatibility.shouldShowSortButton(PLAYER_INVENTORY);
+                    this.addDrawableChild(invsort$PlayerSortBtn);
+                }
+            }
         }
     }
 
@@ -121,6 +132,10 @@ public abstract class MixinContainerScreen extends Screen implements SortableCon
             } catch (UnsupportedOperationException e) {
                 InventorySorterMod.LOGGER.debug("Unable to get screen ID for sort button visibility check", e);
             }
+        }
+
+        if (invsort$PlayerSortBtn != null) {
+            invsort$PlayerSortBtn.visible = compatibility.shouldShowSortButton(PLAYER_INVENTORY);
         }
     }
 
