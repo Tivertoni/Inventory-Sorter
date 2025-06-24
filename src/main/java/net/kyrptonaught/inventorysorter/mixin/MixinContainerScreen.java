@@ -27,8 +27,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.kyrptonaught.inventorysorter.InventorySorterMod.compatibility;
-import static net.kyrptonaught.inventorysorter.InventorySorterMod.getConfig;
+import static net.kyrptonaught.inventorysorter.InventorySorterMod.*;
 
 @Environment(EnvType.CLIENT)
 @Mixin(HandledScreen.class)
@@ -67,9 +66,9 @@ public abstract class MixinContainerScreen extends Screen implements SortableCon
 
         if (getConfig().showSortButton && InventoryHelper.shouldDisplayButtons(client.player)) {
             boolean playerOnly = !InventoryHelper.canSortInventory(client.player);
-            this.addDrawableChild(invsort$SortBtn = new SortButtonWidget(this.x + this.backgroundWidth - 20, this.y + (playerOnly ? (backgroundHeight - 95) : 6), playerOnly));
+            this.addDrawableChild(invsort$SortBtn = new SortButtonWidget(this.x + this.backgroundWidth - 20, this.y + (playerOnly ? (backgroundHeight - 95) : 6), playerOnly, client.currentScreen));
             if (!playerOnly && getConfig().separateButton)
-                this.addDrawableChild(invsort$PlayerSortBtn = new SortButtonWidget(invsort$SortBtn.getX(), this.y + ((SortableContainerScreen) (this)).getMiddleHeight(), true));
+                this.addDrawableChild(invsort$PlayerSortBtn = new SortButtonWidget(invsort$SortBtn.getX(), this.y + ((this)).getMiddleHeight(), true, client.currentScreen));
         }
     }
 
