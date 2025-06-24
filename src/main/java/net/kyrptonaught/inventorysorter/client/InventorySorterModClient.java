@@ -17,6 +17,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.concurrent.Executors;
@@ -31,6 +32,7 @@ public class InventorySorterModClient implements ClientModInitializer {
     private CompatConfig serverConfig = new CompatConfig();
     private volatile boolean serverIsPresent = false;
     private ScheduledExecutorService scheduler;
+    public static Identifier PLAYER_INVENTORY = Identifier.of("player_inventory");
 
 
     public static final KeyBinding configButton = new KeyBinding(

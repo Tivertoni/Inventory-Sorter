@@ -35,6 +35,7 @@ import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.registry.Registries;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -48,6 +49,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import static net.kyrptonaught.inventorysorter.InventorySorterMod.*;
+import static net.kyrptonaught.inventorysorter.client.InventorySorterModClient.PLAYER_INVENTORY;
 import static net.kyrptonaught.inventorysorter.client.InventorySorterModClient.modifierButton;
 
 @Environment(EnvType.CLIENT)
@@ -76,9 +78,20 @@ public class SortButtonWidget extends TexturedButtonWidget {
     @Override
     public void onPress() {
         MinecraftClient instance = MinecraftClient.getInstance();
+        String screenID = null;
+        if (InventoryHelper.canSortInventory(instance.player)) {
+            screenID = Registries.SCREEN_HANDLER.getId(instance.player.currentScreenHandler.getType()).toString();
+        }
+        if (instance.player.currentScreenHandler instanceof PlayerScreenHandler) {
+            screenID = PLAYER_INVENTORY.toString();
+        }
+
+        if (screenID == null) {
+            InventorySortPacket.sendSortPacket(playerInv);
+            return;
+        }
+
         if (isModifierPressed()) {
-            if (InventoryHelper.canSortInventory(instance.player)) {
-                String screenID = Registries.SCREEN_HANDLER.getId(instance.player.currentScreenHandler.getType()).toString();
                 getConfig().disableButtonForScreen(screenID);
                 compatibility.addShouldHideSortButton(screenID);
                 getConfig().save();
@@ -87,7 +100,8 @@ public class SortButtonWidget extends TexturedButtonWidget {
                 SystemToast.add(instance.getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION,
                         Text.translatable("inventorysorter.sortButton.toast.hide.success.title"),
                         Text.translatable("inventorysorter.sortButton.toast.hide.success.description", screenID));
-            }
+                this.visible = false;
+
         } else {
             InventorySortPacket.sendSortPacket(playerInv);
         }
