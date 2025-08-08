@@ -11,21 +11,24 @@
       locale_with_underscore:
         en-US: en_us
         ar: ar_ar
+        be: be_by
+        be-LATN: be_latn
         br-FR: br_fr
-        zh-CN: zh_cn
-        zh-HK: zh_hk
-        zh-TW: zh_tw
         da: da_dk
-        fi: fi_fi
-        fr: fr_fr
         de: de_de
         el: el_gr
+        es-ES: es_es
+        fi: fi_fi
+        fr: fr_fr
         it: it_it
         ja: ja_jp
         "no": no_no
+        pl: pl_pl
         pt-BR: pt_br
         ru: ru_ru
-        es-ES: es_es
         sv-SE: sv_se
-        uk: uk_ua
         tr: tr_tr
+        uk: uk_ua
+        zh-CN: zh_cn
+        zh-HK: zh_hk
+        zh-TW: zh_tw
