@@ -12,13 +12,11 @@ import net.kyrptonaught.inventorysorter.compat.sources.ConfigLoader;
 import net.kyrptonaught.inventorysorter.config.NewConfigOptions;
 import net.kyrptonaught.inventorysorter.network.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.input.Input;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,17 +32,24 @@ public class InventorySorterModClient implements ClientModInitializer {
     private ScheduledExecutorService scheduler;
     public static Identifier PLAYER_INVENTORY = Identifier.of("player_inventory");
 
-
     public static final KeyBinding configButton = new KeyBinding(
             "inventorysorter.key.config",
             InputUtil.GLFW_KEY_P,
-            "inventorysorter.key.category"
+            /*? if >= 1.21.9 {*/
+            KeyBinding.Category.create(Identifier.of(MOD_ID,"inventorysorter.key.category"))
+            /*?} else {*/
+            /*"inventorysorter.key.category"
+            *//*?}*/
     );
 
     public static final KeyBinding sortButton = new KeyBinding(
             "inventorysorter.key.sort",
             InputUtil.GLFW_KEY_P,
-            "inventorysorter.key.category"
+            /*? if >= 1.21.9 {*/
+            KeyBinding.Category.create(Identifier.of(MOD_ID,"inventorysorter.key.category"))
+            /*?} else {*/
+            /*"inventorysorter.key.category"
+            *//*?}*/
     );
 
     public static final InputUtil.Key modifierButton = InputUtil.Type.KEYSYM.createFromCode(InputUtil.GLFW_KEY_LEFT_CONTROL);
