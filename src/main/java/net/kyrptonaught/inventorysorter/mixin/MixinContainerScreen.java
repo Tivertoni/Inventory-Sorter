@@ -9,6 +9,10 @@ import net.kyrptonaught.inventorysorter.client.SortButtonWidget;
 import net.kyrptonaught.inventorysorter.client.SortableContainerScreen;
 import net.kyrptonaught.inventorysorter.network.InventorySortPacket;
 import net.kyrptonaught.inventorysorter.network.SortSettings;
+/*? if >= 1.21.9 {*/
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.KeyInput;
+/*?}*/
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -29,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.kyrptonaught.inventorysorter.InventorySorterMod.*;
 import static net.kyrptonaught.inventorysorter.client.InventorySorterModClient.PLAYER_INVENTORY;
+import static net.kyrptonaught.inventorysorter.client.InventorySorterModClient.sortButton;
 
 @Environment(EnvType.CLIENT)
 @Mixin(HandledScreen.class)
@@ -85,26 +90,50 @@ public abstract class MixinContainerScreen extends Screen implements SortableCon
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void invsort$mouseClicked(double x, double y, int button, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+    /*? if >= 1.21.9 {*/
+    private void invsort$mouseClicked(Click click, boolean doubled, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+        int button = click.button();
+    /*?} else {*/
+    /*private void invsort$mouseClicked(double x, double y, int button, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+    *//*?}*/
         // Keybind check for mouse bindings, client only
         if (client == null || client.player == null) {
             callbackInfoReturnable.setReturnValue(true);
             return;
         }
-        if (InventorySorterModClient.isKeybindPressed(button, 0, InputUtil.Type.MOUSE)) {
+        /*? if >= 1.21.9 {*/
+        if(sortButton.matchesMouse(click)) {
             sortInventory(callbackInfoReturnable);
         }
+        /*?} else {*/
+        /*if (InventorySorterModClient.isKeybindPressed(button, 0, InputUtil.Type.MOUSE)) {
+            sortInventory(callbackInfoReturnable);
+        }
+        *//*?}*/
 
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-    private void invsort$keyPressed(int keycode, int scancode, int modifiers, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+    /*? if >= 1.21.9 {*/
+    private void invsort$keyPressed(KeyInput input, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+        int keycode = input.key();
+        int scancode = input.scancode();
+    /*?} else {*/
+    /*private void invsort$keyPressed(int keycode, int scancode, int modifiers, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+    *//*?}*/
+
         // Keybind check for key bindings, client only
-        if (client == null || client.player == null)
-            return;
-        if (InventorySorterModClient.isKeybindPressed(keycode, scancode, InputUtil.Type.KEYSYM)) {
+        if (client == null || client.player == null) return;
+
+        /*? if >= 1.21.9 {*/
+        if(sortButton.matchesKey(input)) {
             sortInventory(callbackInfoReturnable);
         }
+        /*?} else {*/
+        /*if (InventorySorterModClient.isKeybindPressed(keycode, scancode, InputUtil.Type.KEYSYM)) {
+            sortInventory(callbackInfoReturnable);
+        }
+        *//*?}*/
     }
 
     @Unique
