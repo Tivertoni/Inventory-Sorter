@@ -33,7 +33,7 @@ public class InventorySorterModClient implements ClientModInitializer {
     private ScheduledExecutorService scheduler;
     public static Identifier PLAYER_INVENTORY = Identifier.of("player_inventory");
     /*? if >= 1.21.9 {*/
-    private static final KeyBinding.Category category = KeyBinding.Category.create(Identifier.of(InventorySorterMod.MOD_ID, "inventorysorter.key.category"));
+    private static final KeyBinding.Category category = KeyBinding.Category.create(Identifier.of(InventorySorterMod.MOD_ID, "main"));
     /*?}*/
 
     public static final KeyBinding configButton = new KeyBinding(
@@ -42,7 +42,7 @@ public class InventorySorterModClient implements ClientModInitializer {
             /*? if >= 1.21.9 {*/
             category
             /*?} else {*/
-            /*"inventorysorter.key.category"
+            /*"key.category.inventorysorter.main"
             *//*?}*/
     );
 
@@ -52,7 +52,7 @@ public class InventorySorterModClient implements ClientModInitializer {
             /*? if >= 1.21.9 {*/
             category
             /*?} else {*/
-            /*"inventorysorter.key.category"
+            /*"key.category.inventorysorter.main"
             *//*?}*/
     );
 
