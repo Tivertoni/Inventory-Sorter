@@ -7,18 +7,17 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
+import net.kyrptonaught.inventorysorter.InventorySorterMod;
 import net.kyrptonaught.inventorysorter.compat.config.CompatConfig;
 import net.kyrptonaught.inventorysorter.compat.sources.ConfigLoader;
 import net.kyrptonaught.inventorysorter.config.NewConfigOptions;
 import net.kyrptonaught.inventorysorter.network.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.input.Input;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,18 +32,28 @@ public class InventorySorterModClient implements ClientModInitializer {
     private volatile boolean serverIsPresent = false;
     private ScheduledExecutorService scheduler;
     public static Identifier PLAYER_INVENTORY = Identifier.of("player_inventory");
-
+    /*? if >= 1.21.9 {*/
+    private static final KeyBinding.Category category = KeyBinding.Category.create(Identifier.of(InventorySorterMod.MOD_ID, "main"));
+    /*?}*/
 
     public static final KeyBinding configButton = new KeyBinding(
             "inventorysorter.key.config",
             InputUtil.GLFW_KEY_P,
-            "inventorysorter.key.category"
+            /*? if >= 1.21.9 {*/
+            category
+            /*?} else {*/
+            /*"key.category.inventorysorter.main"
+            *//*?}*/
     );
 
     public static final KeyBinding sortButton = new KeyBinding(
             "inventorysorter.key.sort",
             InputUtil.GLFW_KEY_P,
-            "inventorysorter.key.category"
+            /*? if >= 1.21.9 {*/
+            category
+            /*?} else {*/
+            /*"key.category.inventorysorter.main"
+            *//*?}*/
     );
 
     public static final InputUtil.Key modifierButton = InputUtil.Type.KEYSYM.createFromCode(InputUtil.GLFW_KEY_LEFT_CONTROL);
@@ -65,21 +74,24 @@ public class InventorySorterModClient implements ClientModInitializer {
 
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            serverIsPresent = false;
             scheduler = Executors.newSingleThreadScheduledExecutor();
 
             ClientPlayNetworking.send(new ClientSync(true));
             syncConfig();
 
+            // Two-stage check: first at 5 seconds, then at 25 seconds if still no server
             scheduler.schedule(() -> {
                 if (!serverIsPresent) {
-                    client.execute(() -> {
-                        if (client.player != null) {
-                            client.player.sendMessage(
+                    // First check at 5 seconds - schedule another check at 25 seconds
+                    scheduler.schedule(() -> {
+                        if (!serverIsPresent && client.player != null) {
+                            client.execute(() -> client.player.sendMessage(
                                     Text.literal("[Inventory Sorter] ").styled(style -> style.withBold(true).withColor(Formatting.AQUA))
                                             .append(Text.translatable("inventorysorter.warning.missing-server").styled(style -> style.withBold(false).withColor(Formatting.YELLOW))
-                                            ), false);
+                                            ), false));
                         }
-                    });
+                    }, 20, TimeUnit.SECONDS);
                 }
             }, 5, TimeUnit.SECONDS);
         });
@@ -101,10 +113,14 @@ public class InventorySorterModClient implements ClientModInitializer {
                 Some mods completely override the mouse scroll event, which can cause issues with the sort button.
                 This way, we ensure that the sort button's scroll functionality is always checked after the screen is initialized.
             */
-            ScreenMouseEvents.afterMouseScroll(screen).register((scr, x, y, horizontalAmount, verticalAmount) -> {
+            ScreenMouseEvents.afterMouseScroll(screen).register((scr, x, y, horizontalAmount, verticalAmount/*? if >= 1.21.9 {*/, consumed/*?}*/) -> {
                 if (!(scr instanceof SortableContainerScreen innerScreen)) {
                     // If it's not our screen type, we don't handle the scroll event.
-                    return;
+                    /*? if >= 1.21.9 {*/
+                    return false;
+                    /*?} else {*/
+                    /*return;
+                    *//*?}*/
                 }
 
                 SortButtonWidget inventoryButton = innerScreen.inventorySorter$getSortButton();
@@ -116,6 +132,9 @@ public class InventorySorterModClient implements ClientModInitializer {
                 if (playerButton != null && playerButton.visible && playerButton.isHovered()) {
                     playerButton.mouseScrolled(x, y, verticalAmount, horizontalAmount);
                 }
+                /*? if >= 1.21.9 {*/
+                return true;
+                /*?}*/
             });
         });
 
@@ -186,13 +205,15 @@ public class InventorySorterModClient implements ClientModInitializer {
         ClientPlayNetworking.send(PlayerSortPrevention.fromConfig(config));
     }
 
-    public static boolean isKeybindPressed(int pressedKeyCode, int scanCode, InputUtil.Type type) {
+    /*? if < 1.21.9 {*/
+    /*public static boolean isKeybindPressed(int pressedKeyCode, int scanCode, InputUtil.Type type) {
         return switch (type) {
             case KEYSYM -> sortButton.matchesKey(pressedKeyCode, scanCode);
             case MOUSE -> sortButton.matchesMouse(pressedKeyCode);
             default -> false;
         };
     }
+    *//*?}*/
 
     private void shutdownScheduler() {
         if (scheduler == null || scheduler.isShutdown()) return;
