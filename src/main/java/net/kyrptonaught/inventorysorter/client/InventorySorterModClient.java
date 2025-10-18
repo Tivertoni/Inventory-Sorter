@@ -74,21 +74,24 @@ public class InventorySorterModClient implements ClientModInitializer {
 
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            serverIsPresent = false;
             scheduler = Executors.newSingleThreadScheduledExecutor();
 
             ClientPlayNetworking.send(new ClientSync(true));
             syncConfig();
 
+            // Two-stage check: first at 5 seconds, then at 25 seconds if still no server
             scheduler.schedule(() -> {
                 if (!serverIsPresent) {
-                    client.execute(() -> {
-                        if (client.player != null) {
-                            client.player.sendMessage(
+                    // First check at 5 seconds - schedule another check at 25 seconds
+                    scheduler.schedule(() -> {
+                        if (!serverIsPresent && client.player != null) {
+                            client.execute(() -> client.player.sendMessage(
                                     Text.literal("[Inventory Sorter] ").styled(style -> style.withBold(true).withColor(Formatting.AQUA))
                                             .append(Text.translatable("inventorysorter.warning.missing-server").styled(style -> style.withBold(false).withColor(Formatting.YELLOW))
-                                            ), false);
+                                            ), false));
                         }
-                    });
+                    }, 20, TimeUnit.SECONDS);
                 }
             }, 5, TimeUnit.SECONDS);
         });
